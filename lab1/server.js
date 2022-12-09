@@ -29,7 +29,7 @@ const startServer = () => {
 
     socket.on('data', (data) => {
       console.log(
-        `Client: ${data.toString()} (Received Bytes: ${data.byteLength})`
+        `Client: ${data.toString()} (INFO: Received Bytes: ${data.byteLength})`
       );
     });
 

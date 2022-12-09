@@ -1,9 +1,5 @@
 const net = require('net');
 const prompt = require('prompt');
-const readLine = require('readline').createInterface(
-  process.stdin,
-  process.stdout
-);
 
 let SERVER_PORT = 0007;
 
@@ -25,6 +21,23 @@ prompt.get(
     startClient();
   }
 );
+prompt.emit('stop');
+
+const getClientMessages = (client) => {
+  prompt.get({ name: 'message', message: 'Enter message' }, (err, result) => {
+    if (err) {
+      throw err;
+    }
+    if (result.message === 'quit') {
+      client.end();
+    }
+    client.write(result.message);
+    console.log(
+      `INFO: Send bytes: ${Buffer.byteLength(result.message, 'utf-8')}`
+    );
+    getClientMessages(client);
+  });
+};
 
 const startClient = () => {
   const client = net.connect(
@@ -33,13 +46,7 @@ const startClient = () => {
       host: '192.168.8.113',
     },
     () => {
-      readLine.on('line', (data) => {
-        client.write(data);
-        if (data === 'quit') {
-          client.end();
-        }
-        console.log(`INFO: Send bytes: ${Buffer.byteLength(data, 'utf-8')}`);
-      });
+      setTimeout(getClientMessages.bind(this, client), 100);
     }
   );
 
