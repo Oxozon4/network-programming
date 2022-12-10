@@ -1,6 +1,7 @@
 const net = require('net');
 const prompt = require('prompt');
 
+const SERVER_HOST = '0.0.0.0';
 let SERVER_PORT = 0007;
 
 prompt.start();
@@ -43,11 +44,14 @@ const startServer = () => {
       console.log(`An error occured: ${message}\n`);
       process.exit();
     });
+    console.log(`Server address: ${server.address().address}`);
   });
 
   server.maxConnections = 1;
 
-  server.listen({ port: SERVER_PORT, host: '0.0.0.0' }, () => {
-    console.log(`Server: Started listening on port: ${SERVER_PORT} ...`);
+  server.listen({ port: SERVER_PORT, host: SERVER_HOST }, () => {
+    console.log(
+      `Server (ip: ${SERVER_HOST}): Started listening on port: ${SERVER_PORT} ...`
+    );
   });
 };

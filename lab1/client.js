@@ -43,7 +43,7 @@ const startClient = () => {
   const client = net.connect(
     {
       port: SERVER_PORT,
-      host: '192.168.8.113',
+      host: '192.168.8.113', // server IP
     },
     () => {
       setTimeout(getClientMessages.bind(this, client), 100);
