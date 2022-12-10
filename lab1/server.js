@@ -1,7 +1,7 @@
 const net = require('net');
 const prompt = require('prompt');
 
-const SERVER_HOST = '0.0.0.0';
+const SERVER_HOST = '192.168.8.113';
 let SERVER_PORT = 0007;
 
 prompt.start();
