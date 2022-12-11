@@ -47,6 +47,12 @@ const startServer = () => {
     console.log(`Server address: ${server.address().address}`);
   });
 
+  server.on('error', (e) => {
+    console.log(`An error occured during creation of the server: ${e}`);
+    console.log(`Are you sure that you have access to IP address: ${SERVER_HOST} ?`);
+    process.exit();
+  })
+
   server.maxConnections = 1;
 
   server.listen({ port: SERVER_PORT, host: SERVER_HOST }, () => {

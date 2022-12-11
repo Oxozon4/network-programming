@@ -43,7 +43,7 @@ const startClient = () => {
   const client = net.connect(
     {
       port: SERVER_PORT,
-      host: '192.168.8.113', // server IP
+      host: '10.104.22.254', // server IP
     },
     () => {
       setTimeout(getClientMessages.bind(this, client), 100);
@@ -61,7 +61,7 @@ const startClient = () => {
 
   client.on('error', (error) => {
     const { message } = error;
-    console.log(`An error occured on the server: ${message}\n`);
+    console.log(`An error occured: ${message}\n`);
     process.exit();
   });
 };
