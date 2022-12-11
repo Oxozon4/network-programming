@@ -1,6 +1,7 @@
 const net = require('net');
 const prompt = require('prompt');
 
+const SERVER_HOST = '192.168.8.113';
 let SERVER_PORT = 0007;
 
 prompt.start();
@@ -43,7 +44,7 @@ const startClient = () => {
   const client = net.connect(
     {
       port: SERVER_PORT,
-      host: '10.104.22.254', // server IP
+      host: SERVER_HOST
     },
     () => {
       setTimeout(getClientMessages.bind(this, client), 100);
