@@ -48,6 +48,9 @@ const runFirstProgramThreads = () => {
 };
 
 const runSecondProgramThreads = () => {
+  let numberOfThreads = 10;
+  const workersArray = [];
+
   for (let i = 1; i <= 10; i += 1) {
     const worker = new Worker('./program2.js', {
       workerData: i === 10 ? 0 : i,
@@ -56,5 +59,32 @@ const runSecondProgramThreads = () => {
       console.log('Program 2: There has been an error with the threads!');
       process.exit();
     });
+    worker.on('exit', () => {
+      if (numberOfThreads === 1) {
+        console.log('Program 2 has finished its operations!');
+        process.exit();
+      }
+      numberOfThreads -= 1;
+    });
+    workersArray.push(worker);
   }
+  prompt.get(
+    {
+      name: 'command',
+      message: 'Enter command:',
+    },
+    (err, result) => {
+      if (err) {
+        return console.log(err);
+      }
+      const pattern = /\bstop \d/i;
+      if (result.command && pattern.test(result.command)) {
+        const splittedPattern = result.command.split(' ');
+        workersArray[splittedPattern[1]].terminate();
+        console.log(
+          `Program 2: Worker with id:${splittedPattern[1]} has been terminated!`
+        );
+      }
+    }
+  );
 };
