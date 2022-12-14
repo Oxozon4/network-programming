@@ -1,1 +1,1 @@
-const worker = require('node:worker_threads');
+console.log('Hello, World!');
