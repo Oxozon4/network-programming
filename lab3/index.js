@@ -53,7 +53,10 @@ const runSecondProgramThreads = () => {
 
   for (let i = 1; i <= 10; i += 1) {
     const worker = new Worker('./program2.js', {
-      workerData: i === 10 ? 0 : i,
+      workerData: {
+        suspended: true,
+        id: i === 10 ? 0 : i,
+      },
     });
     worker.on('error', () => {
       console.log('Program 2: There has been an error with the threads!');
@@ -68,6 +71,7 @@ const runSecondProgramThreads = () => {
     });
     workersArray.push(worker);
   }
+
   prompt.get(
     {
       name: 'command',
@@ -77,12 +81,42 @@ const runSecondProgramThreads = () => {
       if (err) {
         return console.log(err);
       }
-      const pattern = /\bstop \d/i;
-      if (result.command && pattern.test(result.command)) {
+      if (!result.command) {
+        return;
+      }
+      const singleStopPattern = /\bstop \d/i;
+      const multiStopPattern = /\bstop \d-\d/i;
+      const singleStartPattern = /\bstart \d-\d/i;
+      const MultiStartPattern = /\bstart \d-\d/i;
+
+      if (multiStopPattern.test(result.command)) {
+        const splittedPattern = result.command.split(' ')[1].split('-');
+        const [firstNumber, secondNumber] = splittedPattern;
+        if (firstNumber < secondNumber) {
+          for (let i = firstNumber; i <= secondNumber; i++) {
+            workersArray[i].postMessage({ type: 'suspend' });
+          }
+        }
+      } else if (singleStopPattern.test(result.command)) {
         const splittedPattern = result.command.split(' ');
-        workersArray[splittedPattern[1]].terminate();
+        workersArray[splittedPattern[1]].postMessage({ type: 'suspend' });
         console.log(
-          `Program 2: Worker with id:${splittedPattern[1]} has been terminated!`
+          `Program 2: Worker with id:${splittedPattern[1]} has been suspended!`
+        );
+      } else if (MultiStartPattern.test(result.command)) {
+        const splittedPattern = result.command.split(' ')[1].split('-');
+        const [firstNumber, secondNumber] = splittedPattern;
+        if (firstNumber < secondNumber) {
+          for (let i = firstNumber; i <= secondNumber; i++) {
+            console.log(i);
+            workersArray[i].postMessage({ type: 'resume' });
+          }
+        }
+      } else if (singleStartPattern.test(result.command)) {
+        const splittedPattern = result.command.split(' ');
+        workersArray[splittedPattern[1]].postMessage({ type: 'resume' });
+        console.log(
+          `Program 2: Worker with id:${splittedPattern[1]} has been resumed!`
         );
       }
     }
