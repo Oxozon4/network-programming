@@ -1,16 +1,16 @@
-const { workerData } = require('worker_threads');
+const { workerData, parentPort } = require('worker_threads');
 
 let suspended = false;
+let i = 'a'.charCodeAt(0);
 
 if (workerData.suspended) {
   suspended = true;
 }
 
-process.on('message', (msg) => {
+parentPort.on('message', (msg) => {
   if (msg.type === 'suspend') {
     suspended = true;
   } else if (msg.type === 'resume') {
-    console.log('resumed!');
     suspended = false;
   }
 });
@@ -19,14 +19,17 @@ const workerProgram = () => {
   if (suspended) {
     return;
   }
-  let i = 'a'.charCodeAt(0);
-  const interval = setInterval(() => {
-    console.log(`${String.fromCharCode(i)}${workerData.id}`);
-    if (String.fromCharCode(i) === 'z') {
-      clearInterval(interval);
-    }
-    i++;
-  }, 1000);
+  console.log(`${String.fromCharCode(i)}${workerData.id}`);
+  if (String.fromCharCode(i) === 'z') {
+    console.log(
+      `Worker with id: ${workerData.id} has finished its operations!`
+    );
+    i = 'a'.charCodeAt(0);
+    suspended = true;
+  }
+  i++;
 };
 
-setInterval(workerProgram, 1000);
+const interval = setInterval(() => {
+  workerProgram();
+}, 1000);
