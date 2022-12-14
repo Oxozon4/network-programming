@@ -23,7 +23,10 @@ const runProgram = (programNumber) => {
   switch (programNumber) {
     case 1:
       runFirstProgramThreads();
+      break;
     case 2:
+      runSecondProgramThreads();
+      break;
     case 3:
     case 4:
     default:
@@ -38,4 +41,20 @@ const runFirstProgramThreads = () => {
     console.log('Program 1 worker has finished its operations!');
     process.exit();
   });
+  worker.on('error', () => {
+    console.log('Program 1: There has been an error with the thread!');
+    process.exit();
+  });
+};
+
+const runSecondProgramThreads = () => {
+  for (let i = 1; i <= 10; i += 1) {
+    const worker = new Worker('./program2.js', {
+      workerData: i === 10 ? 0 : i,
+    });
+    worker.on('error', () => {
+      console.log('Program 2: There has been an error with the threads!');
+      process.exit();
+    });
+  }
 };
