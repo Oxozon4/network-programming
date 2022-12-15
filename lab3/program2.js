@@ -22,14 +22,13 @@ const workerProgram = () => {
   console.log(`${String.fromCharCode(i)}${workerData.id}`);
   if (String.fromCharCode(i) === 'z') {
     console.log(
-      `Worker with id: ${workerData.id} has finished its operations!`
+      `Worker with id: ${workerData.id} has finished its operations!\n`
     );
-    i = 'a'.charCodeAt(0);
-    suspended = true;
+    process.exit();
   }
   i++;
 };
 
-const interval = setInterval(() => {
+setInterval(() => {
   workerProgram();
 }, 1000);
