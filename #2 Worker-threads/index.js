@@ -10,7 +10,7 @@ prompt.get(
     name: 'programNumber',
     validator: /^\d{1}$/,
     message: 'What program would you like to run? (1-4)',
-    warning: 'Port must be a number!',
+    warning: 'Program must be a number in range 1-4!',
   },
   (err, result) => {
     if (err) {
