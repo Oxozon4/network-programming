@@ -6,6 +6,8 @@ const MAX_CONNECTIONS = 3;
 let SERVER_PORT = 0007;
 let ACTIVE_CONNECTIONS = 0;
 
+const clients = [];
+
 prompt.start();
 prompt.get(
   {
@@ -31,7 +33,13 @@ const startServer = () => {
     if (ACTIVE_CONNECTIONS > MAX_CONNECTIONS) {
       socket.write('Too many connections');
     } else {
+      clients.push(socket);
       socket.write('Server: Welcome new client!\n');
+      clients.forEach((client) => {
+        client.write(
+          `Server: Active connected clients: ${ACTIVE_CONNECTIONS}\n`
+        );
+      });
       console.log('Client connected!');
       console.log(`Client address: ${socket.remoteAddress}`);
       console.log(`Client port: ${socket.remotePort}`);
@@ -44,7 +52,13 @@ const startServer = () => {
           socket._peername.port
         }): ${data.toString()} (INFO: Received Bytes: ${data.byteLength})`
       );
-      socket.write(data.toString());
+      clients.forEach((client) => {
+        if (client !== socket) {
+          client.write(
+            `\nClient (IP: ${socket._peername.address}, Port: ${socket._peername.port}): ${data}`
+          );
+        }
+      });
     });
 
     socket.on('end', () => {
@@ -60,6 +74,10 @@ const startServer = () => {
     });
 
     socket.on('close', () => {
+      const index = clients.indexOf(socket);
+      if (index !== -1) {
+        clients.splice(index, 1);
+      }
       ACTIVE_CONNECTIONS -= 1;
     });
     console.log(`Server address: ${server.address().address}\n`);
