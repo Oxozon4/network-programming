@@ -1,0 +1,22 @@
+    <tr>
+        <td>Kocia karma</td>
+        <td>11</td>
+    </tr>
+    
+    <tr>
+        <td>kawa</td>
+        <td>22</td>
+    </tr>
+    <tr>
+        <td>owoce</td>
+        <td>33</td>
+    </tr>
+    
+    <tr>
+        <td>coca cola</td>
+        <td>44</td>
+    </tr>
+    <tr>
+        <td>sok owocowy</td>
+        <td>55</td>
+    </tr>
