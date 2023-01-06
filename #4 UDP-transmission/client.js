@@ -51,10 +51,7 @@ const startClient = () => {
   getClientMessages(client);
 
   client.on('message', (msg, rinfo) => {
-    console.log(msg.toString());
-    if (msg === 'Too many connections') {
-      client.close();
-    }
+    console.log(`\nServer: ${msg.toString()}`);
   });
 
   client.on('end', () => {

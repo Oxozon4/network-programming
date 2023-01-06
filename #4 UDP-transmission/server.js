@@ -2,11 +2,7 @@ const dgram = require('dgram');
 const prompt = require('prompt');
 
 const SERVER_HOST = '192.168.8.113';
-const MAX_CONNECTIONS = 3;
 let SERVER_PORT = 0007;
-let ACTIVE_CONNECTIONS = 0;
-
-const clients = [];
 
 prompt.start();
 prompt.get(
@@ -41,33 +37,17 @@ const startServer = () => {
     console.log(
       `Client (Address: ${rinfo.address}, PORT:${rinfo.port}): ${msg} (INFO: Received Bytes: ${rinfo.size})`
     );
-    if (
-      !clients.find(
-        (client) =>
-          client.port === rinfo.port && client.address === rinfo.address
-      )
-    ) {
-      clients.push(rinfo);
-    }
-    clients.forEach(() => {
-      console.log('sending message');
-      const message = Buffer.from(
-        `\nClient (IP: ${rinfo.address}, Port: ${rinfo.port}): ${msg}`
-      );
+    const message = Buffer.from(msg);
 
-      server.send(message, rinfo.port, rinfo.address, (error) => {
-        if (error) {
-          console.error(error);
-          server.close();
-        }
-      });
+    server.send(message, rinfo.port, rinfo.address, (error) => {
+      if (error) {
+        console.error(error);
+        server.close();
+      }
     });
   });
 
   server.on('error', (e) => {
-    if (e.message === 'Too many connections') {
-      return;
-    }
     console.log(`An error occured during creation of the server: ${e}`);
     console.log(
       `Are you sure that you have access to IP address: ${SERVER_HOST} ?`
