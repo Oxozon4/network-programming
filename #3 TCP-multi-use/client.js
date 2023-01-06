@@ -52,7 +52,11 @@ const startClient = () => {
   );
 
   client.on('data', (data) => {
-    console.log(data.toString());
+    const stringData = data.toString();
+    console.log(stringData);
+    if (stringData === 'Too many connections') {
+      client.end();
+    }
   });
 
   client.on('end', () => {
