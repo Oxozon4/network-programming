@@ -7,6 +7,5 @@
 
 - Run npm install
 - Enter broadcast or multicast directory
-- Change IP address for TCP server to your own: change 'SERVER_HOST' variable for server.js and client.js
 - Run server: 'node server.js'
 - Run client: 'node client.js'
