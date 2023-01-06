@@ -1,4 +1,4 @@
-const net = require('net');
+const dgram = require('dgram');
 const prompt = require('prompt');
 
 const SERVER_HOST = '192.168.8.113';
@@ -28,59 +28,40 @@ prompt.get(
 );
 
 const startServer = () => {
-  const server = net.createServer((socket) => {
-    ACTIVE_CONNECTIONS += 1;
-    if (ACTIVE_CONNECTIONS > MAX_CONNECTIONS) {
-      socket.write('Too many connections');
-    } else {
-      clients.push(socket);
-      socket.write('Server: Welcome new client!\n');
-      clients.forEach((client) => {
-        client.write(
-          `Server: Active connected clients: ${ACTIVE_CONNECTIONS}\n`
-        );
-      });
-      console.log('Client connected!');
-      console.log(`Client address: ${socket.remoteAddress}`);
-      console.log(`Client port: ${socket.remotePort}`);
-      console.log(`Client IP4/IP6: ${socket.remoteFamily}`);
-    }
+  const server = dgram.createSocket('udp4');
 
-    socket.on('data', (data) => {
-      console.log(
-        `Client (PORT:${
-          socket._peername.port
-        }): ${data.toString()} (INFO: Received Bytes: ${data.byteLength})`
+  server.on('listening', () => {
+    const address = server.address();
+    console.log(
+      `Server (Address: ${address.address}): Started listening on port: ${address.port} ...`
+    );
+  });
+
+  server.on('message', (msg, rinfo) => {
+    console.log(
+      `Client (Address: ${rinfo.address}, PORT:${rinfo.port}): ${msg} (INFO: Received Bytes: ${rinfo.size})`
+    );
+    if (
+      !clients.find(
+        (client) =>
+          client.port === rinfo.port && client.address === rinfo.address
+      )
+    ) {
+      clients.push(rinfo);
+    }
+    clients.forEach(() => {
+      console.log('sending message');
+      const message = Buffer.from(
+        `\nClient (IP: ${rinfo.address}, Port: ${rinfo.port}): ${msg}`
       );
-      clients.forEach((client) => {
-        if (client !== socket) {
-          client.write(
-            `\nClient (IP: ${socket._peername.address}, Port: ${socket._peername.port}): ${data}`
-          );
+
+      server.send(message, rinfo.port, rinfo.address, (error) => {
+        if (error) {
+          console.error(error);
+          server.close();
         }
       });
     });
-
-    socket.on('end', () => {
-      ACTIVE_CONNECTIONS -= 1;
-      console.log('Client disconnected');
-    });
-
-    socket.on('error', (error) => {
-      const { message } = error;
-      socket.write(`Server: An error occured: ${message}\n`);
-      console.log(`An error occured: ${message}\n`);
-      process.exit();
-    });
-
-    socket.on('close', () => {
-      const index = clients.indexOf(socket);
-      if (index !== -1) {
-        clients.splice(index, 1);
-      }
-      ACTIVE_CONNECTIONS -= 1;
-    });
-    console.log(`Server address: ${server.address().address}\n`);
   });
 
   server.on('error', (e) => {
@@ -94,9 +75,5 @@ const startServer = () => {
     process.exit();
   });
 
-  server.listen({ port: SERVER_PORT, host: SERVER_HOST }, () => {
-    console.log(
-      `Server (ip: ${SERVER_HOST}): Started listening on port: ${SERVER_PORT} ...`
-    );
-  });
+  server.bind(SERVER_PORT, SERVER_HOST);
 };

@@ -1,4 +1,4 @@
-const net = require('net');
+const dgram = require('dgram');
 const prompt = require('prompt');
 
 const SERVER_HOST = '192.168.8.113';
@@ -32,7 +32,12 @@ const getClientMessages = (client) => {
     if (result.message === 'quit') {
       client.end();
     }
-    client.write(result.message);
+    const message = Buffer.from(result.message);
+    client.send(message, SERVER_PORT, SERVER_HOST, () => {
+      if (err) {
+        throw err;
+      }
+    });
     console.log(
       `INFO: Send bytes: ${Buffer.byteLength(result.message, 'utf-8')}`
     );
@@ -41,21 +46,14 @@ const getClientMessages = (client) => {
 };
 
 const startClient = () => {
-  const client = net.connect(
-    {
-      port: SERVER_PORT,
-      host: SERVER_HOST,
-    },
-    () => {
-      setTimeout(getClientMessages.bind(this, client), 100);
-    }
-  );
+  const client = dgram.createSocket('udp4');
 
-  client.on('data', (data) => {
-    const stringData = data.toString();
-    console.log(stringData);
-    if (stringData === 'Too many connections') {
-      client.end();
+  getClientMessages(client);
+
+  client.on('message', (msg, rinfo) => {
+    console.log(msg.toString());
+    if (msg === 'Too many connections') {
+      client.close();
     }
   });
 
