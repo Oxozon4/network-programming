@@ -43,7 +43,10 @@ const getServerMessages = (server) => {
 
 const startServer = () => {
   const server = dgram.createSocket('udp4');
-  getServerMessages(server);
+  server.bind(() => {
+    server.setBroadcast(true);
+    getServerMessages(server);
+  });
 
   server.on('error', (e) => {
     console.log(`An error occured during creation of the server: ${e}`);

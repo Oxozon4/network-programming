@@ -23,29 +23,27 @@ prompt.get(
   }
 );
 
-const startServer = () => {
-  const server = dgram.createSocket('udp4');
-
-  server.on('listening', () => {
-    const address = server.address();
-    console.log(
-      `Server (Address: ${address.address}): Started listening on port: ${address.port} ...`
-    );
-  });
-
-  server.on('message', (msg, rinfo) => {
-    console.log(
-      `Client (Address: ${rinfo.address}, PORT:${rinfo.port}): ${msg} (INFO: Received Bytes: ${rinfo.size})`
-    );
-    const message = Buffer.from(msg);
-
-    server.send(message, rinfo.port, rinfo.address, (error) => {
-      if (error) {
-        console.error(error);
-        server.close();
+const getServerMessages = (server) => {
+  prompt.get({ name: 'message', message: 'Enter message' }, (err, result) => {
+    if (err) {
+      throw err;
+    }
+    if (result.message === 'quit') {
+      server.end();
+    }
+    const message = Buffer.from(result.message);
+    server.send(message, SERVER_PORT, SERVER_HOST, () => {
+      if (err) {
+        throw err;
       }
     });
+    getServerMessages(server);
   });
+};
+
+const startServer = () => {
+  const server = dgram.createSocket('udp4');
+  getServerMessages(server);
 
   server.on('error', (e) => {
     console.log(`An error occured during creation of the server: ${e}`);
@@ -54,6 +52,4 @@ const startServer = () => {
     );
     process.exit();
   });
-
-  server.bind(SERVER_PORT, SERVER_HOST);
 };

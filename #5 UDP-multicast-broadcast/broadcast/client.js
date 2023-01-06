@@ -40,6 +40,6 @@ const startClient = () => {
     console.log(`An error occured: ${message}\n`);
     process.exit();
   });
-};
 
-client.bind(SERVER_PORT);
+  client.bind(SERVER_PORT);
+};
