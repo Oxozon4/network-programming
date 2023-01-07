@@ -6,4 +6,5 @@
 # How to run project
 
 - Run npm install
-- Run
+- Run npm start
+- Enter http://localhost:8080/1_2 or any simmilar url to display required magazine data
