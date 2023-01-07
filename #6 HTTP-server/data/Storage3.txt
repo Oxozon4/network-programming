@@ -1,22 +1,23 @@
+
     <tr>
-        <td>Kocia karma</td>
-        <td>0</td>
+        <td>towar 11</td>
+        <td>100</td>
     </tr>
     
     <tr>
-        <td>kawa</td>
-        <td>0</td>
+        <td>towar 12</td>
+        <td>300</td>
     </tr>
     <tr>
-        <td>owoce</td>
-        <td>0</td>
+        <td>towar 13</td>
+        <td>200</td>
     </tr>
     
     <tr>
-        <td>coca cola</td>
-        <td>15</td>
+        <td>towar 14</td>
+        <td>500</td>
     </tr>
     <tr>
-        <td>sok owocowy</td>
-        <td>0</td>
+        <td>towar 15</td>
+        <td>600</td>
     </tr>
