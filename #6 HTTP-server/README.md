@@ -6,3 +6,4 @@
 # How to run project
 
 - Run npm install
+- Run
