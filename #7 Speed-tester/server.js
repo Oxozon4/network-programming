@@ -17,7 +17,7 @@ prompt.get(
       SERVER_PORT = Number(result.port);
     }
     startServerTCPWorker();
-    startServerUDPWorker();
+    // startServerUDPWorker();
   }
 );
 

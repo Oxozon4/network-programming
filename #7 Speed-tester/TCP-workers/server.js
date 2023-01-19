@@ -1,27 +1,28 @@
-const net = require("net");
+const net = require('net');
 
-const SERVER_HOST = "192.168.8.113";
+const SERVER_HOST = '192.168.8.113';
 const MAX_CONNECTIONS = 1;
 let SERVER_PORT = 0007;
 let ACTIVE_CONNECTIONS = 0;
+const clients = [];
 
 const server = net.createServer((socket) => {
   ACTIVE_CONNECTIONS += 1;
   if (ACTIVE_CONNECTIONS > MAX_CONNECTIONS) {
-    socket.write("Too many connections");
+    socket.write('Too many connections');
   } else {
     clients.push(socket);
-    socket.write("Server: Welcome new client!\n");
+    socket.write('Server: Welcome new client!\n');
     clients.forEach((client) => {
       client.write(`Server: Active connected clients: ${ACTIVE_CONNECTIONS}\n`);
     });
-    console.log("Client connected!");
+    console.log('Client connected!');
     console.log(`Client address: ${socket.remoteAddress}`);
     console.log(`Client port: ${socket.remotePort}`);
     console.log(`Client IP4/IP6: ${socket.remoteFamily}`);
   }
 
-  socket.on("data", (data) => {
+  socket.on('data', (data) => {
     console.log(
       `Client (PORT:${
         socket._peername.port
@@ -36,19 +37,19 @@ const server = net.createServer((socket) => {
     });
   });
 
-  socket.on("end", () => {
+  socket.on('end', () => {
     ACTIVE_CONNECTIONS -= 1;
-    console.log("Client disconnected");
+    console.log('Client disconnected');
   });
 
-  socket.on("error", (error) => {
+  socket.on('error', (error) => {
     const { message } = error;
     socket.write(`Server: An error occured: ${message}\n`);
     console.log(`An error occured: ${message}\n`);
     process.exit();
   });
 
-  socket.on("close", () => {
+  socket.on('close', () => {
     const index = clients.indexOf(socket);
     if (index !== -1) {
       clients.splice(index, 1);
@@ -58,8 +59,8 @@ const server = net.createServer((socket) => {
   console.log(`Server address: ${server.address().address}\n`);
 });
 
-server.on("error", (e) => {
-  if (e.message === "Too many connections") {
+server.on('error', (e) => {
+  if (e.message === 'Too many connections') {
     return;
   }
   console.log(`An error occured during creation of the server: ${e}`);
