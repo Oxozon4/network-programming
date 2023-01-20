@@ -9,6 +9,10 @@ let dataSize = 10;
 let isNagleAlgorithm = true;
 let activeWorkers = 0;
 const dataArray = [];
+let isDestroyed = false;
+
+let UDPWorker;
+let TCPWorker;
 
 prompt.start();
 prompt.get(
@@ -87,6 +91,8 @@ const getNagleFlag = () => {
       fillDataArray();
       startClientTCPWorker();
       startClientUDPWorker();
+      console.log('Sending data...');
+      getUserExitMessage();
       prompt.emit('stop');
     }
   );
@@ -112,7 +118,7 @@ const onWorkerExit = (workerName) => {
 };
 
 const startClientTCPWorker = () => {
-  const TCPWorker = new Worker('./TCP-workers/client', {
+  TCPWorker = new Worker('./TCP-workers/client', {
     workerData: {
       SERVER_HOST,
       SERVER_PORT,
@@ -134,7 +140,7 @@ const startClientTCPWorker = () => {
 };
 
 const startClientUDPWorker = () => {
-  const UDPWorker = new Worker('./UDP-workers/client', {
+  UDPWorker = new Worker('./UDP-workers/client', {
     workerData: {
       SERVER_HOST,
       SERVER_PORT,
@@ -153,4 +159,21 @@ const startClientUDPWorker = () => {
     console.log('UDP Worker: There has been an error with the thread!', msg);
     onWorkerExit('UDP');
   });
+};
+
+getUserExitMessage = () => {
+  prompt.get(
+    {
+      name: 'exit',
+      message: 'Press enter if you would like to stop the transmission',
+    },
+    (err, result) => {
+      if (err) {
+        return console.log(err);
+      }
+      TCPWorker.postMessage({ type: 'exit', data: { message: 'exit' } });
+      UDPWorker.postMessage({ type: 'exit', data: { message: 'exit' } });
+      console.log('Ending transmission..');
+    }
+  );
 };

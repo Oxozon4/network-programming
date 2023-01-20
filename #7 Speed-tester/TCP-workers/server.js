@@ -5,6 +5,8 @@ const maxConnections = 1;
 let SERVER_PORT = 0007;
 let activeConnections = 0;
 let receivedDataSize = 10;
+let startTime;
+let endTime;
 const clients = [];
 
 const server = net.createServer((socket) => {
@@ -27,10 +29,16 @@ const server = net.createServer((socket) => {
     if (stringData.startsWith('SIZE:')) {
       receivedDataSize = Number(stringData.substring('5'));
     }
+    endTime = Date.now();
 
     console.log(
-      `Client TCP (PORT:${socket._peername.port}): ${stringData} (INFO: Received Bytes: ${data.byteLength})`
+      `Client TCP (PORT:${socket._peername.port}): ${stringData} Received ${
+        data.byteLength
+      } bytes in ${new Date(
+        endTime - startTime
+      ).getSeconds()} seconds. Transfer speed: ${data.byteLength / 1024}kb/sec`
     );
+    startTime = Date.now();
   });
 
   socket.on('end', () => {

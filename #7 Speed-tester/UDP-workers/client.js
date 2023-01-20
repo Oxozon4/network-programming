@@ -1,5 +1,5 @@
 const dgram = require('dgram');
-const { workerData } = require('worker_threads');
+const { workerData, parentPort } = require('worker_threads');
 const { SERVER_HOST, SERVER_PORT, dataArray, dataSize } = workerData;
 
 const client = dgram.createSocket('udp4');
@@ -7,6 +7,13 @@ const client = dgram.createSocket('udp4');
 const sendClientMessages = (client, message) => {
   client.send(message, SERVER_PORT, SERVER_HOST);
 };
+
+parentPort.on('message', (message) => {
+  if (message.type === 'exit') {
+    client.send('FINE', SERVER_PORT, SERVER_HOST);
+    process.exit();
+  }
+});
 
 setInterval(sendClientMessages.bind(this, client, dataArray.toString()), 1000);
 

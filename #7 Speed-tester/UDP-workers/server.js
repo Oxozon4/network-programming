@@ -15,6 +15,10 @@ server.on('message', (msg, rinfo) => {
   console.log(
     `Client UDP (Address: ${rinfo.address}, PORT:${rinfo.port}): ${msg} (INFO: Received Bytes: ${rinfo.size})`
   );
+  if (msg === 'FINE') {
+    console.log('fine');
+    process.exit();
+  }
 });
 
 server.on('error', (e) => {

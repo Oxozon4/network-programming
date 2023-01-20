@@ -1,7 +1,13 @@
 const net = require('net');
-const { workerData } = require('worker_threads');
+const { workerData, parentPort } = require('worker_threads');
 const { SERVER_HOST, SERVER_PORT, isNagleAlgorithm, dataArray, dataSize } =
   workerData;
+
+parentPort.on('message', (message) => {
+  if (message.type === 'exit') {
+    process.exit();
+  }
+});
 
 const client = net.connect(
   {
