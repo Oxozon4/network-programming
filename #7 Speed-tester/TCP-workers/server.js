@@ -9,11 +9,11 @@ const clients = [];
 const server = net.createServer((socket) => {
   ACTIVE_CONNECTIONS += 1;
   if (ACTIVE_CONNECTIONS > MAX_CONNECTIONS) {
-    socket.write('Server: BUSY\n');
+    socket.write('BUSY\n');
   } else {
     clients.push(socket);
-    socket.write('Server: Welcome new client!\n');
-    socket.write(`Server: READY\n`);
+    socket.write('Welcome new TCP client!\n');
+    socket.write(`READY\n`);
     console.log('Client connected!');
     console.log(`Client address: ${socket.remoteAddress}`);
     console.log(`Client port: ${socket.remotePort}`);
@@ -42,7 +42,7 @@ const server = net.createServer((socket) => {
 
   socket.on('error', (error) => {
     const { message } = error;
-    socket.write(`Server: An error occured: ${message}\n`);
+    socket.write(`An error occured: ${message}\n`);
     console.log(`An error occured: ${message}\n`);
     process.exit();
   });
@@ -54,7 +54,6 @@ const server = net.createServer((socket) => {
     }
     ACTIVE_CONNECTIONS -= 1;
   });
-  console.log(`Server address: ${server.address().address}\n`);
 });
 
 server.on('error', (e) => {
@@ -70,6 +69,6 @@ server.on('error', (e) => {
 
 server.listen({ port: SERVER_PORT, host: SERVER_HOST }, () => {
   console.log(
-    `Server (ip: ${SERVER_HOST}): Started listening on port: ${SERVER_PORT} ...`
+    `Server - TCP (ip: ${SERVER_HOST}): Started listening on port: ${SERVER_PORT} ...`
   );
 });

@@ -19,7 +19,8 @@ prompt.get(
       SERVER_PORT = Number(result.port);
     }
     startServerTCPWorker();
-    // startServerUDPWorker();
+    startServerUDPWorker();
+    console.log('Server: All threads succesfully created!');
   }
 );
 
