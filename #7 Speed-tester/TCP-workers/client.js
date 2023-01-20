@@ -1,20 +1,20 @@
-const net = require("net");
-const prompt = require("prompt");
+const net = require('net');
+const prompt = require('prompt');
 
-const SERVER_HOST = "192.168.8.113";
+const SERVER_HOST = '192.168.8.113';
 let SERVER_PORT = 0007;
 
 const getClientMessages = (client) => {
-  prompt.get({ name: "message", message: "Enter message" }, (err, result) => {
+  prompt.get({ name: 'message', message: 'Enter message' }, (err, result) => {
     if (err) {
       throw err;
     }
-    if (result.message === "quit") {
+    if (result.message === 'quit') {
       client.end();
     }
     client.write(result.message);
     console.log(
-      `INFO: Send bytes: ${Buffer.byteLength(result.message, "utf-8")}`
+      `INFO: Send bytes: ${Buffer.byteLength(result.message, 'utf-8')}`
     );
     getClientMessages(client);
   });
@@ -30,20 +30,22 @@ const client = net.connect(
   }
 );
 
-client.on("data", (data) => {
+client.on('data', (data) => {
   const stringData = data.toString();
   console.log(stringData);
-  if (stringData === "Too many connections") {
+  if (stringData.includes('BUSY')) {
+    console.log('lol');
     client.end();
+    process.exit();
   }
 });
 
-client.on("end", () => {
-  console.log("Disconnected from the server");
+client.on('end', () => {
+  console.log('Disconnected from the server');
   process.exit();
 });
 
-client.on("error", (error) => {
+client.on('error', (error) => {
   const { message } = error;
   console.log(`An error occured: ${message}\n`);
   process.exit();

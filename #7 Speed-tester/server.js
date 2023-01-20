@@ -24,10 +24,10 @@ prompt.get(
 );
 
 const onWorkerExit = (workerName) => {
-  console.log(`${workerName} finished its operations`);
+  console.log(`Server: ${workerName} worker finished its operations`);
   activeWorkers -= 1;
   if (activeWorkers <= 0) {
-    console.log('All workers finished its operations!');
+    console.log('Server: All workers finished its operations!');
     process.exit();
   }
 };

@@ -9,13 +9,11 @@ const clients = [];
 const server = net.createServer((socket) => {
   ACTIVE_CONNECTIONS += 1;
   if (ACTIVE_CONNECTIONS > MAX_CONNECTIONS) {
-    socket.write('Too many connections');
+    socket.write('Server: BUSY\n');
   } else {
     clients.push(socket);
     socket.write('Server: Welcome new client!\n');
-    clients.forEach((client) => {
-      client.write(`Server: Active connected clients: ${ACTIVE_CONNECTIONS}\n`);
-    });
+    socket.write(`Server: READY\n`);
     console.log('Client connected!');
     console.log(`Client address: ${socket.remoteAddress}`);
     console.log(`Client port: ${socket.remotePort}`);

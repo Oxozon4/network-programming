@@ -1,8 +1,9 @@
-const net = require('net');
+const { Worker } = require('worker_threads');
 const prompt = require('prompt');
 
 const SERVER_HOST = '192.168.8.113';
 let SERVER_PORT = 0007;
+let activeWorkers = 0;
 
 prompt.start();
 prompt.get(
@@ -19,54 +20,31 @@ prompt.get(
     if (result.port) {
       SERVER_PORT = Number(result.port);
     }
-    startClient();
+    startClientTCPWorker();
   }
 );
 prompt.emit('stop');
 
-const getClientMessages = (client) => {
-  prompt.get({ name: 'message', message: 'Enter message' }, (err, result) => {
-    if (err) {
-      throw err;
-    }
-    if (result.message === 'quit') {
-      client.end();
-    }
-    client.write(result.message);
+const onWorkerExit = (workerName) => {
+  console.log(`Client: ${workerName} worker finished its operations`);
+  activeWorkers -= 1;
+  if (activeWorkers <= 0) {
     console.log(
-      `INFO: Send bytes: ${Buffer.byteLength(result.message, 'utf-8')}`
+      'Client: All workers finished its operations!\nExiting program...'
     );
-    getClientMessages(client);
-  });
+    process.exit();
+  }
 };
 
-const startClient = () => {
-  const client = net.connect(
-    {
-      port: SERVER_PORT,
-      host: SERVER_HOST,
-    },
-    () => {
-      setTimeout(getClientMessages.bind(this, client), 100);
-    }
-  );
+const startClientTCPWorker = () => {
+  const TCPWorker = new Worker('./TCP-workers/client');
 
-  client.on('data', (data) => {
-    const stringData = data.toString();
-    console.log(stringData);
-    if (stringData === 'Too many connections') {
-      client.end();
-    }
+  TCPWorker.on('exit', () => {
+    console.log('TCP Worker: Finished all operations!');
+    onWorkerExit('TCP');
   });
-
-  client.on('end', () => {
-    console.log('Disconnected from the server');
-    process.exit();
-  });
-
-  client.on('error', (error) => {
-    const { message } = error;
-    console.log(`An error occured: ${message}\n`);
-    process.exit();
+  TCPWorker.on('error', (msg) => {
+    console.log('TCP Worker: There has been an error with the thread!', msg);
+    onWorkerExit('TCP');
   });
 };
