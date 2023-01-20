@@ -5,9 +5,10 @@ const ipAddressRegex =
   /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
 let SERVER_HOST = '192.168.8.113';
 let SERVER_PORT = 0007;
-let DATA_SIZE = 10;
-let IS_NAGLE_ALGORITHM = true;
+let dataSize = 10;
+let isNagleAlgorithm = true;
 let activeWorkers = 0;
+const dataArray = [];
 
 prompt.start();
 prompt.get(
@@ -61,7 +62,7 @@ const getDataSize = () => {
         return console.log(err);
       }
       if (result.dataSize) {
-        SERVER_PORT = Number(result.port);
+        dataSize = Number(result.dataSize);
       }
       getNagleFlag();
     }
@@ -80,16 +81,24 @@ const getNagleFlag = () => {
       if (err) {
         return console.log(err);
       }
-      if (result.nagleFlag === 'N') {
-        IS_NAGLE_ALGORITHM = false;
+      if (result.nagleFlag === 'N' || result.nagleFlag === 'n') {
+        isNagleAlgorithm = false;
       }
+      fillDataArray();
       startClientTCPWorker();
       startClientUDPWorker();
+      prompt.emit('stop');
     }
   );
 };
 
-prompt.emit('stop');
+const fillDataArray = () => {
+  let i = 1;
+  while (i <= dataSize) {
+    dataArray.push(i);
+    i += 1;
+  }
+};
 
 const onWorkerExit = (workerName) => {
   console.log(`Client: ${workerName} worker finished its operations`);
