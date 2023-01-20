@@ -112,7 +112,15 @@ const onWorkerExit = (workerName) => {
 };
 
 const startClientTCPWorker = () => {
-  const TCPWorker = new Worker('./TCP-workers/client');
+  const TCPWorker = new Worker('./TCP-workers/client', {
+    workerData: {
+      SERVER_HOST,
+      SERVER_PORT,
+      isNagleAlgorithm,
+      dataArray,
+      dataSize,
+    },
+  });
   activeWorkers += 1;
 
   TCPWorker.on('exit', () => {
@@ -126,7 +134,15 @@ const startClientTCPWorker = () => {
 };
 
 const startClientUDPWorker = () => {
-  const UDPWorker = new Worker('./UDP-workers/client');
+  const UDPWorker = new Worker('./UDP-workers/client', {
+    workerData: {
+      SERVER_HOST,
+      SERVER_PORT,
+      isNagleAlgorithm,
+      dataArray,
+      dataSize,
+    },
+  });
   activeWorkers += 1;
 
   UDPWorker.on('exit', () => {

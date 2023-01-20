@@ -15,16 +15,8 @@ server.on('listening', () => {
 
 server.on('message', (msg, rinfo) => {
   console.log(
-    `Client (Address: ${rinfo.address}, PORT:${rinfo.port}): ${msg} (INFO: Received Bytes: ${rinfo.size})`
+    `Client UDP (Address: ${rinfo.address}, PORT:${rinfo.port}): ${msg} (INFO: Received Bytes: ${rinfo.size})`
   );
-  const message = Buffer.from(msg);
-
-  server.send(message, rinfo.port, rinfo.address, (error) => {
-    if (error) {
-      console.error(error);
-      server.close();
-    }
-  });
 });
 
 server.on('error', (e) => {

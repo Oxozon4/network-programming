@@ -1,11 +1,7 @@
 const net = require('net');
-
-const SERVER_HOST = '192.168.8.113';
-let SERVER_PORT = 0007;
-
-const getClientMessages = (client) => {
-  console.log('message');
-};
+const { workerData } = require('worker_threads');
+const { SERVER_HOST, SERVER_PORT, isNagleAlgorithm, dataArray, dataSize } =
+  workerData;
 
 const client = net.connect(
   {
@@ -13,16 +9,27 @@ const client = net.connect(
     host: SERVER_HOST,
   },
   () => {
-    client.setNoDelay(true); // Nagle algorithm
-    setTimeout(getClientMessages.bind(this, client), 100);
+    if (isNagleAlgorithm) {
+      client.setNoDelay(true);
+    }
+    sendSizeMessage(client);
+    const message = dataArray.toString();
+    setInterval(sendClientMessages.bind(this, client, message), 1000);
   }
 );
+
+const sendSizeMessage = (client) => {
+  client.write(`SIZE:${dataSize}`);
+};
+
+const sendClientMessages = (client, message) => {
+  client.write(`${message}`);
+};
 
 client.on('data', (data) => {
   const stringData = data.toString();
   console.log(`Server TCP: ${stringData}`);
   if (stringData.includes('BUSY')) {
-    console.log('lol');
     client.end();
     process.exit();
   }

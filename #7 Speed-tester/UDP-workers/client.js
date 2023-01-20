@@ -1,10 +1,14 @@
 const dgram = require('dgram');
-const SERVER_HOST = '192.168.8.113';
-let SERVER_PORT = 0007;
+const { workerData } = require('worker_threads');
+const { SERVER_HOST, SERVER_PORT, dataArray, dataSize } = workerData;
 
 const client = dgram.createSocket('udp4');
 
-console.log('udp message');
+const sendClientMessages = (client, message) => {
+  client.send(message, SERVER_PORT, SERVER_HOST);
+};
+
+setInterval(sendClientMessages.bind(this, client, dataArray.toString()), 1000);
 
 client.on('message', (msg, rinfo) => {
   console.log(`\nServer UDP: ${msg.toString()}`);

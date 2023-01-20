@@ -1,14 +1,15 @@
 const net = require('net');
 
 const SERVER_HOST = '192.168.8.113';
-const MAX_CONNECTIONS = 1;
+const maxConnections = 1;
 let SERVER_PORT = 0007;
-let ACTIVE_CONNECTIONS = 0;
+let activeConnections = 0;
+let receivedDataSize = 10;
 const clients = [];
 
 const server = net.createServer((socket) => {
-  ACTIVE_CONNECTIONS += 1;
-  if (ACTIVE_CONNECTIONS > MAX_CONNECTIONS) {
+  activeConnections += 1;
+  if (activeConnections > maxConnections) {
     socket.write('BUSY\n');
   } else {
     clients.push(socket);
@@ -21,23 +22,20 @@ const server = net.createServer((socket) => {
   }
 
   socket.on('data', (data) => {
+    const stringData = data.toString();
+
+    if (stringData.startsWith('SIZE:')) {
+      receivedDataSize = Number(stringData.substring('5'));
+    }
+
     console.log(
-      `Client (PORT:${
-        socket._peername.port
-      }): ${data.toString()} (INFO: Received Bytes: ${data.byteLength})`
+      `Client TCP (PORT:${socket._peername.port}): ${stringData} (INFO: Received Bytes: ${data.byteLength})`
     );
-    clients.forEach((client) => {
-      if (client !== socket) {
-        client.write(
-          `\nClient (IP: ${socket._peername.address}, Port: ${socket._peername.port}): ${data}`
-        );
-      }
-    });
   });
 
   socket.on('end', () => {
-    ACTIVE_CONNECTIONS -= 1;
-    console.log('Client disconnected');
+    activeConnections -= 1;
+    console.log('Client TCP disconnected');
   });
 
   socket.on('error', (error) => {
@@ -52,7 +50,7 @@ const server = net.createServer((socket) => {
     if (index !== -1) {
       clients.splice(index, 1);
     }
-    ACTIVE_CONNECTIONS -= 1;
+    activeConnections -= 1;
   });
 });
 
