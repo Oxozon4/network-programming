@@ -41,8 +41,8 @@ const server = net.createServer((socket) => {
   socket.on('error', (error) => {
     const { message } = error;
     socket.write(`An error occured: ${message}\n`);
-    console.log(`An error occured: ${message}\n`);
-    process.exit();
+    console.log(`Server TCP: An error occured: ${message}\n`);
+    activeConnections -= 1;
   });
 
   socket.on('close', () => {

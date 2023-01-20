@@ -1,6 +1,4 @@
 const dgram = require('dgram');
-const prompt = require('prompt');
-
 const SERVER_HOST = '192.168.8.113';
 let SERVER_PORT = 0007;
 
@@ -20,9 +18,11 @@ server.on('message', (msg, rinfo) => {
 });
 
 server.on('error', (e) => {
-  console.log(`An error occured during creation of the server: ${e}`);
   console.log(
-    `Are you sure that you have access to IP address: ${SERVER_HOST} ?`
+    `Server UDP: An error occured during creation of the server: ${e}`
+  );
+  console.log(
+    `Server UDP: Are you sure that you have access to IP address: ${SERVER_HOST} ?`
   );
   process.exit();
 });
