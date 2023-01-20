@@ -1,6 +1,8 @@
 const { Worker } = require('worker_threads');
 const prompt = require('prompt');
 
+let activeWorkers = 0;
+
 prompt.start();
 prompt.get(
   {
@@ -21,16 +23,25 @@ prompt.get(
   }
 );
 
+const onWorkerExit = (workerName) => {
+  console.log(`${workerName} finished its operations`);
+  activeWorkers -= 1;
+  if (activeWorkers <= 0) {
+    console.log('All workers finished its operations!');
+    process.exit();
+  }
+};
+
 const startServerTCPWorker = () => {
   const TCPWorker = new Worker('./TCP-workers/server');
 
   TCPWorker.on('exit', () => {
     console.log('TCP Worker: Finished all operations!');
-    process.exit();
+    onWorkerExit('TCP');
   });
   TCPWorker.on('error', (msg) => {
     console.log('TCP Worker: There has been an error with the thread!', msg);
-    process.exit();
+    onWorkerExit('TCP');
   });
 };
 
@@ -39,10 +50,10 @@ const startServerUDPWorker = () => {
 
   UDPWorker.on('exit', () => {
     console.log('UDP Worker: Finished all operations!');
-    process.exit();
+    onWorkerExit('UDP');
   });
   UDPWorker.on('error', (msg) => {
     console.log('UDP Worker: There has been an error with the thread!', msg);
-    process.exit();
+    onWorkerExit('UDP');
   });
 };
