@@ -21,6 +21,7 @@ prompt.get(
       SERVER_PORT = Number(result.port);
     }
     startClientTCPWorker();
+    startClientUDPWorker();
   }
 );
 prompt.emit('stop');
@@ -38,6 +39,7 @@ const onWorkerExit = (workerName) => {
 
 const startClientTCPWorker = () => {
   const TCPWorker = new Worker('./TCP-workers/client');
+  activeWorkers += 1;
 
   TCPWorker.on('exit', () => {
     console.log('TCP Worker: Finished all operations!');
@@ -46,5 +48,18 @@ const startClientTCPWorker = () => {
   TCPWorker.on('error', (msg) => {
     console.log('TCP Worker: There has been an error with the thread!', msg);
     onWorkerExit('TCP');
+  });
+};
+
+const startClientUDPWorker = () => {
+  const UDPWorker = new Worker('./UDP-workers/client');
+
+  UDPWorker.on('exit', () => {
+    console.log('UDP Worker: Finished all operations!');
+    onWorkerExit('UDP');
+  });
+  UDPWorker.on('error', (msg) => {
+    console.log('UDP Worker: There has been an error with the thread!', msg);
+    onWorkerExit('UDP');
   });
 };

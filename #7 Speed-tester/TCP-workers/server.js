@@ -14,10 +14,10 @@ const server = net.createServer((socket) => {
     clients.push(socket);
     socket.write('Welcome new TCP client!\n');
     socket.write(`READY\n`);
-    console.log('Client connected!');
-    console.log(`Client address: ${socket.remoteAddress}`);
-    console.log(`Client port: ${socket.remotePort}`);
-    console.log(`Client IP4/IP6: ${socket.remoteFamily}`);
+    console.log('Client TCP connected!');
+    console.log(`Client TCP address: ${socket.remoteAddress}`);
+    console.log(`Client TCP port: ${socket.remotePort}`);
+    console.log(`Client TCP IP4/IP6: ${socket.remoteFamily}`);
   }
 
   socket.on('data', (data) => {
