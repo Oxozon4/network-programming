@@ -1,29 +1,94 @@
 const { Worker } = require('worker_threads');
 const prompt = require('prompt');
 
-const SERVER_HOST = '192.168.8.113';
+const ipAddressRegex =
+  /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+let SERVER_HOST = '192.168.8.113';
 let SERVER_PORT = 0007;
+let DATA_SIZE = 10;
+let IS_NAGLE_ALGORITHM = true;
 let activeWorkers = 0;
 
 prompt.start();
 prompt.get(
   {
-    name: 'port',
-    validator: /^\d{4}$/,
-    message: 'Enter port of the server (Press enter if 0007)',
-    warning: 'Port must be a number containing 4 digits!',
+    name: 'ip',
+    validator: ipAddressRegex,
+    message: 'Enter IP address of the server (Press enter if 192.168.8.113)',
+    warning: 'Incorrect IP address format!',
   },
   (err, result) => {
     if (err) {
       return console.log(err);
     }
-    if (result.port) {
-      SERVER_PORT = Number(result.port);
+    if (result.ip) {
+      SERVER_HOST = result.ip;
     }
-    startClientTCPWorker();
-    startClientUDPWorker();
+    getServerPort();
   }
 );
+
+const getServerPort = () => {
+  prompt.get(
+    {
+      name: 'port',
+      validator: /^\d{4}$/,
+      message: 'Enter port of the server (Press enter if 0007)',
+      warning: 'Port must be a number containing 4 digits!',
+    },
+    (err, result) => {
+      if (err) {
+        return console.log(err);
+      }
+      if (result.port) {
+        SERVER_PORT = Number(result.port);
+      }
+      getDataSize();
+    }
+  );
+};
+
+const getDataSize = () => {
+  prompt.get(
+    {
+      name: 'dataSize',
+      validator: /\d+/,
+      message: 'Enter size of data packages (Press enter if 10)',
+      warning: 'Data size must be a number',
+    },
+    (err, result) => {
+      if (err) {
+        return console.log(err);
+      }
+      if (result.dataSize) {
+        SERVER_PORT = Number(result.port);
+      }
+      getNagleFlag();
+    }
+  );
+};
+
+const getNagleFlag = () => {
+  prompt.get(
+    {
+      name: 'nagleFlag',
+      validator: /[yYnN]/,
+      message: 'Would you like to use Nagle algorithm? (Y/N)',
+      warning: 'Answer must be either Y or N!',
+    },
+    (err, result) => {
+      if (err) {
+        return console.log(err);
+      }
+      if (result.nagleFlag === 'N') {
+        IS_NAGLE_ALGORITHM = false;
+      }
+      startClientTCPWorker();
+      startClientUDPWorker();
+    }
+  );
+};
+
 prompt.emit('stop');
 
 const onWorkerExit = (workerName) => {
@@ -53,6 +118,7 @@ const startClientTCPWorker = () => {
 
 const startClientUDPWorker = () => {
   const UDPWorker = new Worker('./UDP-workers/client');
+  activeWorkers += 1;
 
   UDPWorker.on('exit', () => {
     console.log('UDP Worker: Finished all operations!');

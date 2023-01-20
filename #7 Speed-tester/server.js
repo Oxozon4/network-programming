@@ -2,6 +2,7 @@ const { Worker } = require('worker_threads');
 const prompt = require('prompt');
 
 let activeWorkers = 0;
+let SERVER_PORT = 0007;
 
 prompt.start();
 prompt.get(
@@ -35,6 +36,7 @@ const onWorkerExit = (workerName) => {
 
 const startServerTCPWorker = () => {
   const TCPWorker = new Worker('./TCP-workers/server');
+  activeWorkers += 1;
 
   TCPWorker.on('exit', () => {
     console.log('TCP Worker: Finished all operations!');
@@ -48,6 +50,7 @@ const startServerTCPWorker = () => {
 
 const startServerUDPWorker = () => {
   const UDPWorker = new Worker('./UDP-workers/server.js');
+  activeWorkers += 1;
 
   UDPWorker.on('exit', () => {
     console.log('UDP Worker: Finished all operations!');

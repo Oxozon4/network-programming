@@ -13,7 +13,7 @@ const client = net.connect(
     host: SERVER_HOST,
   },
   () => {
-    client.setNoDelay(true);
+    client.setNoDelay(true); // Nagle algorithm
     setTimeout(getClientMessages.bind(this, client), 100);
   }
 );
