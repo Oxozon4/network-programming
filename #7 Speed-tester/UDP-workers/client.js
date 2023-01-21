@@ -18,6 +18,9 @@ parentPort.on('message', (message) => {
 setInterval(sendClientMessages.bind(this, client, dataArray.toString()), 1000);
 
 client.on('message', (msg, rinfo) => {
+  // if (msg.toString() === 'BUSY') {
+  //   process.exit();
+  // }
   console.log(`\nServer UDP: ${msg.toString()}`);
 });
 

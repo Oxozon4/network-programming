@@ -3,7 +3,7 @@ const prompt = require('prompt');
 
 const ipAddressRegex =
   /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
-let SERVER_HOST = '10.128.103.165';
+let SERVER_HOST = '192.168.8.113';
 let SERVER_PORT = 0007;
 let dataSize = 10;
 let isNagleAlgorithm = true;
@@ -132,10 +132,12 @@ const startClientTCPWorker = () => {
   TCPWorker.on('exit', () => {
     console.log('TCP Worker: Finished all operations!');
     onWorkerExit('TCP');
+    UDPWorker.postMessage({ type: 'exit', data: { message: 'exit' } });
   });
   TCPWorker.on('error', (msg) => {
     console.log('TCP Worker: There has been an error with the thread!', msg);
     onWorkerExit('TCP');
+    UDPWorker.postMessage({ type: 'exit', data: { message: 'exit' } });
   });
 };
 

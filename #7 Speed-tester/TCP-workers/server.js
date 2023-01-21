@@ -32,7 +32,7 @@ const server = net.createServer((socket) => {
     endTime = Date.now();
 
     console.log(
-      `Client TCP (PORT:${socket._peername.port}): ${stringData} Received ${
+      `Client TCP (PORT:${socket._peername?.port}): ${stringData} Received ${
         data.byteLength
       } bytes in ${new Date(
         endTime - startTime
