@@ -1,6 +1,6 @@
 const dgram = require('dgram');
-const SERVER_HOST = '192.168.8.113';
-let SERVER_PORT = 0007;
+const { workerData } = require('worker_threads');
+const { SERVER_HOST, SERVER_PORT } = workerData;
 
 const server = dgram.createSocket('udp4');
 

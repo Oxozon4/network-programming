@@ -1,8 +1,8 @@
 const net = require('net');
+const { workerData } = require('worker_threads');
+const { SERVER_HOST, SERVER_PORT } = workerData;
 
-const SERVER_HOST = '192.168.8.113';
 const maxConnections = 1;
-let SERVER_PORT = 0007;
 let activeConnections = 0;
 let receivedDataSize = 10;
 let startTime;

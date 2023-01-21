@@ -1,6 +1,7 @@
 const { Worker } = require('worker_threads');
 const prompt = require('prompt');
 
+const SERVER_HOST = '10.128.103.165';
 let activeWorkers = 0;
 let SERVER_PORT = 0007;
 
@@ -35,7 +36,12 @@ const onWorkerExit = (workerName) => {
 };
 
 const startServerTCPWorker = () => {
-  const TCPWorker = new Worker('./TCP-workers/server');
+  const TCPWorker = new Worker('./TCP-workers/server', {
+    workerData: {
+      SERVER_HOST,
+      SERVER_PORT,
+    },
+  });
   activeWorkers += 1;
 
   TCPWorker.on('exit', () => {
@@ -49,7 +55,12 @@ const startServerTCPWorker = () => {
 };
 
 const startServerUDPWorker = () => {
-  const UDPWorker = new Worker('./UDP-workers/server.js');
+  const UDPWorker = new Worker('./UDP-workers/server.js', {
+    workerData: {
+      SERVER_HOST,
+      SERVER_PORT,
+    },
+  });
   activeWorkers += 1;
 
   UDPWorker.on('exit', () => {

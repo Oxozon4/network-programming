@@ -3,7 +3,7 @@ const prompt = require('prompt');
 
 const ipAddressRegex =
   /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
-let SERVER_HOST = '192.168.8.113';
+let SERVER_HOST = '10.128.103.165';
 let SERVER_PORT = 0007;
 let dataSize = 10;
 let isNagleAlgorithm = true;
