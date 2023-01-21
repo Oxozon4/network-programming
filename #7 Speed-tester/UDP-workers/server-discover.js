@@ -1,10 +1,7 @@
 const dgram = require('dgram');
 const server = dgram.createSocket('udp4');
 
-// Multicast IP address to discover servers
 const multicastAddr = '230.185.192.108';
-
-server.addMembership(multicastAddr, '192.168.8.113');
 
 server.on('listening', () => {
   console.log(
@@ -22,4 +19,6 @@ server.on('message', (msg, rinfo) => {
   }
 });
 
-server.bind(0007, '192.168.8.113');
+server.bind(0007, () => {
+  server.addMembership(multicastAddr);
+});

@@ -14,7 +14,7 @@ client.send('Are you a server?', 0007, multicastAddr, (err, bytes) => {
   if (err) {
     console.log(`Error sending message: ${err}`);
   } else {
-    console.log(`Sent message to ${multicastAddr}:0007`);
+    console.log(`Sent Multicast message to ${multicastAddr}:0007`);
   }
 });
 
