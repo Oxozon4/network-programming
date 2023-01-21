@@ -9,10 +9,22 @@ let dataSize = 10;
 let isNagleAlgorithm = true;
 let activeWorkers = 0;
 const dataArray = [];
-let isDestroyed = false;
 
 let UDPWorker;
 let TCPWorker;
+let DiscoverWorker;
+
+DiscoverWorker = new Worker('./UDP-workers/client-discover');
+DiscoverWorker.on('exit', () => {
+  console.log('TCP Worker: Finished all operations!');
+  onWorkerExit('TCP');
+  UDPWorker.postMessage({ type: 'exit', data: { message: 'exit' } });
+});
+DiscoverWorker.on('error', (msg) => {
+  console.log('TCP Worker: There has been an error with the thread!', msg);
+  onWorkerExit('TCP');
+  UDPWorker.postMessage({ type: 'exit', data: { message: 'exit' } });
+});
 
 prompt.start();
 prompt.get(

@@ -5,6 +5,8 @@ const SERVER_HOST = '192.168.8.113';
 let activeWorkers = 0;
 let SERVER_PORT = 0007;
 
+let DiscoverWorker;
+
 prompt.start();
 prompt.get(
   {
@@ -20,6 +22,7 @@ prompt.get(
     if (result.port) {
       SERVER_PORT = Number(result.port);
     }
+    startServerDiscoverWorker();
     startServerTCPWorker();
     startServerUDPWorker();
     console.log('Server: All threads succesfully created!');
@@ -33,6 +36,19 @@ const onWorkerExit = (workerName) => {
     console.log('Server: All workers finished its operations!');
     process.exit();
   }
+};
+
+const startServerDiscoverWorker = () => {
+  DiscoverWorker = new Worker('./UDP-workers/server-discover');
+  DiscoverWorker.on('exit', () => {
+    console.log('Discover Worker: Finished all operations!');
+  });
+  DiscoverWorker.on('error', (msg) => {
+    console.log(
+      'Discover Worker: There has been an error with the thread!',
+      msg
+    );
+  });
 };
 
 const startServerTCPWorker = () => {
