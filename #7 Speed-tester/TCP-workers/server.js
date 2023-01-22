@@ -1,5 +1,5 @@
 const net = require('net');
-const { workerData } = require('worker_threads');
+const { workerData, parentPort } = require('worker_threads');
 const { SERVER_HOST, SERVER_PORT } = workerData;
 
 const maxConnections = 1;
@@ -74,6 +74,7 @@ const server = net.createServer((socket) => {
         1024
       ).toFixed(2)}Kb/s`
     );
+    parentPort.postMessage({ message: 'End' });
   });
 });
 
@@ -88,7 +89,7 @@ server.on('error', (e) => {
   process.exit();
 });
 
-server.listen({ port: SERVER_PORT, host: SERVER_HOST }, () => {
+server.listen({ port: SERVER_PORT }, () => {
   console.log(
     `Server - TCP (ip: ${SERVER_HOST}): Started listening on port: ${SERVER_PORT} ...`
   );

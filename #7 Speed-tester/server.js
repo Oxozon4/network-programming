@@ -6,6 +6,8 @@ let activeWorkers = 0;
 let SERVER_PORT = 0007;
 
 let DiscoverWorker;
+let TCPWorker;
+let UDPWorker;
 
 prompt.start();
 prompt.get(
@@ -52,7 +54,7 @@ const startServerDiscoverWorker = () => {
 };
 
 const startServerTCPWorker = () => {
-  const TCPWorker = new Worker('./TCP-workers/server', {
+  TCPWorker = new Worker('./TCP-workers/server', {
     workerData: {
       SERVER_HOST,
       SERVER_PORT,
@@ -68,10 +70,17 @@ const startServerTCPWorker = () => {
     console.log('TCP Worker: There has been an error with the thread!', msg);
     onWorkerExit('TCP');
   });
+  TCPWorker.on('message', () => {
+    if (UDPWorker) {
+      UDPWorker.postMessage('End');
+    } else {
+      console.log('UDP not initialized');
+    }
+  });
 };
 
 const startServerUDPWorker = () => {
-  const UDPWorker = new Worker('./UDP-workers/server.js', {
+  UDPWorker = new Worker('./UDP-workers/server.js', {
     workerData: {
       SERVER_HOST,
       SERVER_PORT,
