@@ -6,5 +6,5 @@
 # How to run project
 
 - Run npm install
-- Run node index.js in a separate terminal
-- Run node client.js in a separate terminal
+- Run 'node server.js' in a separate terminal
+- Run 'node client.js' in a separate terminal
