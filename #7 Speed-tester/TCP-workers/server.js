@@ -9,11 +9,16 @@ let startTime;
 let endTime;
 const clients = [];
 
+let finalStartTime;
+let finalEndTime;
+let PackagesSum = 0;
+
 const server = net.createServer((socket) => {
   activeConnections += 1;
   if (activeConnections > maxConnections) {
     socket.write('BUSY\n');
   } else {
+    finalStartTime = Date.now();
     clients.push(socket);
     socket.write('Welcome new TCP client!\n');
     socket.write(`READY\n`);
@@ -38,7 +43,9 @@ const server = net.createServer((socket) => {
         endTime - startTime
       ).getSeconds()} seconds. Transfer speed: ${data.byteLength / 1024}kb/sec`
     );
+    PackagesSum += data.byteLength;
     startTime = Date.now();
+    finalEndTime = Date.now();
   });
 
   socket.on('end', () => {
@@ -59,6 +66,14 @@ const server = net.createServer((socket) => {
       clients.splice(index, 1);
     }
     activeConnections -= 1;
+    const connectionTime = new Date(finalEndTime - finalStartTime).getSeconds();
+    console.log(
+      `TCP Statistics: Total time: ${connectionTime}s Total bytes: ${PackagesSum} Speed: ${(
+        PackagesSum /
+        connectionTime /
+        1024
+      ).toFixed(2)}Kb/s`
+    );
   });
 });
 

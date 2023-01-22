@@ -21,7 +21,7 @@ parentPort.on('message', (message) => {
   }
 });
 
-setInterval(sendClientMessages.bind(this, client, dataArray.toString()), 1000);
+setInterval(sendClientMessages.bind(this, client, dataArray.toString()), 0);
 
 client.on('message', (msg, rinfo) => {
   console.log(`\nServer UDP: ${msg.toString()}`);

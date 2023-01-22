@@ -9,11 +9,16 @@ let packetsReceived = 0;
 let packetsExpected = 0;
 let controlSum = 0;
 
+let finalStartTime;
+let finalEndTime;
+let PackagesSum = 0;
+
 server.on('listening', () => {
   const address = server.address();
   console.log(
     `Server - UDP (ip: ${address.address}): Started listening on port: ${address.port} ...`
   );
+  finalStartTime = Date.now();
 });
 
 server.on('message', (msg, rinfo) => {
@@ -35,6 +40,16 @@ server.on('message', (msg, rinfo) => {
 
   console.log(
     `Client UDP (Address: ${rinfo.address}, PORT:${rinfo.port}): ${msg} (INFO: Received Bytes: ${rinfo.size})`
+  );
+  PackagesSum += rinfo.size;
+  finalEndTime = Date.now();
+  const connectionTime = new Date(finalEndTime - finalStartTime).getSeconds();
+  console.log(
+    `UDP Statistics: Total time: ${connectionTime}s Total bytes: ${PackagesSum} Speed: ${(
+      PackagesSum /
+      connectionTime /
+      1024
+    ).toFixed(2)}Kb/s`
   );
 });
 

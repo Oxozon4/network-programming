@@ -3,7 +3,7 @@ const prompt = require('prompt');
 
 const ipAddressRegex =
   /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
-let SERVER_HOST = '192.168.8.113';
+let SERVER_HOST = '192.168.56.1';
 let SERVER_PORT = 0007;
 let dataSize = 10;
 let isNagleAlgorithm = true;
@@ -27,7 +27,7 @@ prompt.get(
   {
     name: 'ip',
     validator: ipAddressRegex,
-    message: 'Enter IP address of the server (Press enter if 192.168.8.113)',
+    message: 'Enter IP address of the server (Press enter if 192.168.56.1)',
     warning: 'Incorrect IP address format!',
   },
   (err, result) => {

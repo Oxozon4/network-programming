@@ -1,7 +1,7 @@
 const { Worker } = require('worker_threads');
 const prompt = require('prompt');
 
-const SERVER_HOST = '192.168.8.113';
+const SERVER_HOST = '192.168.56.1';
 let activeWorkers = 0;
 let SERVER_PORT = 0007;
 

@@ -20,7 +20,7 @@ const client = net.connect(
     }
     sendSizeMessage(client);
     const message = dataArray.toString();
-    setInterval(sendClientMessages.bind(this, client, message), 1000);
+    setInterval(sendClientMessages.bind(this, client, message), 0);
   }
 );
 
