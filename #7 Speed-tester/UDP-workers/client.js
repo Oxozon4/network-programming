@@ -1,11 +1,17 @@
 const dgram = require('dgram');
 const { workerData, parentPort } = require('worker_threads');
 const { SERVER_HOST, SERVER_PORT, dataArray, dataSize } = workerData;
+let controlSum = 0;
 
 const client = dgram.createSocket('udp4');
 
 const sendClientMessages = (client, message) => {
-  client.send(message, SERVER_PORT, SERVER_HOST);
+  controlSum += 1;
+  client.send(
+    `${message} Control Sum: ${controlSum}`,
+    SERVER_PORT,
+    SERVER_HOST
+  );
 };
 
 parentPort.on('message', (message) => {
@@ -18,9 +24,6 @@ parentPort.on('message', (message) => {
 setInterval(sendClientMessages.bind(this, client, dataArray.toString()), 1000);
 
 client.on('message', (msg, rinfo) => {
-  // if (msg.toString() === 'BUSY') {
-  //   process.exit();
-  // }
   console.log(`\nServer UDP: ${msg.toString()}`);
 });
 

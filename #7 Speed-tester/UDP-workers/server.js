@@ -3,6 +3,11 @@ const { workerData } = require('worker_threads');
 const { SERVER_HOST, SERVER_PORT } = workerData;
 
 const server = dgram.createSocket('udp4');
+let regex = /Control Sum: (\d+)/;
+let match;
+let packetsReceived = 0;
+let packetsExpected = 0;
+let controlSum = 0;
 
 server.on('listening', () => {
   const address = server.address();
@@ -12,13 +17,25 @@ server.on('listening', () => {
 });
 
 server.on('message', (msg, rinfo) => {
-  console.log(
-    `Client UDP (Address: ${rinfo.address}, PORT:${rinfo.port}): ${msg} (INFO: Received Bytes: ${rinfo.size})`
-  );
   if (msg === 'FINE') {
     console.log('fine');
     process.exit();
   }
+  match = msg.toString().match(regex);
+  if (match[1]) {
+    packetsReceived++;
+    controlSum = parseInt(match[1]);
+    if (packetsReceived !== packetsExpected) {
+      console.log(
+        `UDP Packet loss detected. Expected ${packetsExpected}, received ${packetsReceived}`
+      );
+    }
+    packetsExpected++;
+  }
+
+  console.log(
+    `Client UDP (Address: ${rinfo.address}, PORT:${rinfo.port}): ${msg} (INFO: Received Bytes: ${rinfo.size})`
+  );
 });
 
 server.on('error', (e) => {
